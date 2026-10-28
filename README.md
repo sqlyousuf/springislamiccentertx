@@ -3,15 +3,15 @@
 A static site (no build step) for Spring Islamic Center, 18901 Kuykendahl Rd, Spring, TX 77388. It's hosted on Cloudflare Workers (static assets).
 
 - `public/` holds everything that gets deployed: `index.html`, `styles.css`, `app.js` and `logo.svg`.
-- Prayer times come live from **Masjidal**'s public, keyless feed (`https://masjidal.com/api/v1/time/range`), called straight from the browser. If Masjidal can't be reached, the site shows calculated adhan times from AlAdhan (Karachi method, standard Asr) instead.
-- The site is built mobile-first, with a bottom quick-action bar on phones (Prayer times, Directions, Call, Donate).
+- Prayer times come live from **Masjidal**'s public, keyless feed (`https://masjidal.com/api/v1/time/range`), called straight from the browser. If Masjidal can't be reached, the site asks visitors to call the masjid.
+- The site is built mobile-first, with a bottom quick-action bar on phones (Prayer times, Directions, Call).
 
 ## Masjidal IDs
 
 Both are set at the top of [public/app.js](public/app.js):
 
-- `MASJIDAL_ID = "zKz3YnLO"` — Klein Islamic Center (this masjid): daily adhan, iqamah and the 7-day table. Taken from the `masjid_id=` in the Masjidal/AthanPlus widget on kleinislamiccenter.org.
-- `JUMUAH_MASJIDAL_ID = "adJqxqAk"` — Masjid Ibrahim (5500 FM 2920), where KIC's Jumu'ah is held. The KIC feed has no Jumu'ah times.
+- `MASJIDAL_ID = "zKz3YnLO"` — Spring Islamic Center (this masjid): daily adhan, iqamah and the 7-day table. Taken from the `masjid_id=` in the Masjidal/AthanPlus widget on the masjid's previous website.
+- `JUMUAH_MASJIDAL_ID = "adJqxqAk"` — Masjid Ibrahim (5500 FM 2920), where this masjid's Jumu'ah is held. This masjid's feed has no Jumu'ah times.
 
 ## Preview locally
 

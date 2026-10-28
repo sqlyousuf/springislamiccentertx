@@ -1,11 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Spring Islamic Center">
-  <rect width="64" height="64" rx="14" fill="#0e3b33"/>
-  <!-- eight-point star -->
-  <g fill="none" stroke="#c9a96a" stroke-width="2" stroke-linejoin="round">
-    <rect x="15" y="15" width="34" height="34"/>
-    <rect x="15" y="15" width="34" height="34" transform="rotate(45 32 32)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Spring Islamic Center">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ecd7a0"/>
+      <stop offset=".55" stop-color="#cfae6c"/>
+      <stop offset="1" stop-color="#a8823f"/>
+    </linearGradient>
+    <radialGradient id="e" cx=".5" cy=".38" r=".7">
+      <stop offset="0" stop-color="#17594b"/>
+      <stop offset="1" stop-color="#0a2c26"/>
+    </radialGradient>
+    <mask id="crescent">
+      <rect width="128" height="128" fill="#fff"/>
+      <circle cx="66.3" cy="28.6" r="4.6" fill="#000"/>
+    </mask>
+  </defs>
+
+  <!-- khatam: eight-pointed star -->
+  <polygon points="64,3 81.87,20.87 107.13,20.87 107.13,46.13 125,64 107.13,81.87 107.13,107.13 81.87,107.13 64,125 46.13,107.13 20.87,107.13 20.87,81.87 3,64 20.87,46.13 20.87,20.87 46.13,20.87"
+           fill="url(#e)" stroke="url(#g)" stroke-width="3" stroke-linejoin="round"/>
+  <polygon points="64,9 80.11,25.11 102.89,25.11 102.89,47.89 119,64 102.89,80.11 102.89,102.89 80.11,102.89 64,119 47.89,102.89 25.11,102.89 25.11,80.11 9,64 25.11,47.89 25.11,25.11 47.89,25.11"
+           fill="none" stroke="url(#g)" stroke-width="1" opacity=".55" stroke-linejoin="round"/>
+  <circle cx="64" cy="64" r="42" fill="none" stroke="url(#g)" stroke-width="1" opacity=".45"/>
+
+  <g fill="url(#g)">
+    <!-- crescent finial -->
+    <circle cx="64" cy="30" r="5.2" mask="url(#crescent)"/>
+    <rect x="63.1" y="35" width="1.8" height="6.5" rx=".9"/>
+    <!-- onion dome -->
+    <path d="M50.5 72C44 67 45.5 58.5 55 53.5 60 50.8 63 47 64 41.5 65 47 68 50.8 73 53.5 82.5 58.5 84 67 77.5 72Z"/>
+    <!-- prayer hall -->
+    <rect x="47" y="73.5" width="34" height="20" rx="1"/>
+    <!-- minarets -->
+    <path d="M36 93.5V60h6v33.5z M86 93.5V60h6v33.5z"/>
+    <path d="M34.5 64h9v2.4h-9z M84.5 64h9v2.4h-9z"/>
+    <path d="M36 60l3-9 3 9z M86 60l3-9 3 9z"/>
+    <circle cx="39" cy="49.2" r="1.3"/>
+    <circle cx="89" cy="49.2" r="1.3"/>
+    <!-- base -->
+    <rect x="31" y="94.5" width="66" height="3" rx="1.5"/>
   </g>
-  <!-- arch -->
-  <path d="M24 44V33c0-5.5 8-9.5 8-12 0 2.5 8 6.5 8 12v11z" fill="#c9a96a"/>
-  <path d="M29 44v-6a3 3 0 0 1 6 0v6z" fill="#0e3b33"/>
+
+  <!-- door and windows -->
+  <g fill="#0c3530">
+    <path d="M58.5 93.5v-8.5a5.5 5.5 0 0 1 11 0v8.5z"/>
+    <path d="M50.5 86v-4.5a2.5 2.5 0 0 1 5 0V86z M72.5 86v-4.5a2.5 2.5 0 0 1 5 0V86z"/>
+    <rect x="38" y="70" width="2" height="5" rx="1"/>
+    <rect x="88" y="70" width="2" height="5" rx="1"/>
+  </g>
 </svg>

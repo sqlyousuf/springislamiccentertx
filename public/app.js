@@ -1,17 +1,12 @@
 // ---- Settings -------------------------------------------------------------
 // Masjidal IDs (the "masjid_id=" in the masjid's Masjidal / AthanPlus widget).
-// Klein Islamic Center's ID comes from the widget on kleinislamiccenter.org.
+// This masjid's ID comes from the Masjidal widget on its previous website.
 // Jumu'ah is held at Masjid Ibrahim, so its times come from that masjid's feed.
-const MASJIDAL_ID = "zKz3YnLO";        // Klein Islamic Center (this masjid)
+const MASJIDAL_ID = "zKz3YnLO";        // Spring Islamic Center (this masjid)
 const JUMUAH_MASJIDAL_ID = "adJqxqAk"; // Masjid Ibrahim, 5500 FM 2920
 const WEEK_DAYS = 7;
 
 const TIMEZONE = "America/Chicago";
-const LOCATION = { lat: 30.0443, lng: -95.4908 }; // 18901 Kuykendahl Rd, Spring, TX
-// Fallback only (if Masjidal is unreachable): matches Klein Islamic Center's
-// settings — Karachi method (Fajr/Isha 18°), Shafi'i (standard) Asr, Dhuhr +1 minute.
-const CALC_METHOD = 1;
-const CALC_TUNE = "0,0,0,1,0,0,0,0,0"; // imsak,fajr,sunrise,dhuhr,asr,maghrib,sunset,isha,midnight
 
 const PRAYERS = [
   { key: "fajr",    name: "Fajr",    ar: "الفجر" },
@@ -91,25 +86,7 @@ async function fromMasjidal(today) {
   const hijri = s0.hijri_date && s0.hijri_month
     ? `${s0.hijri_date.split(",")[0].trim()} ${s0.hijri_month} ${s0.hijri_date.split(",")[1]?.trim() || ""} AH`.trim()
     : null;
-  return { days, hijri, source: "Prayer times from Masjidal · updated by Klein Islamic Center" };
-}
-
-async function fromCalculation(today) {
-  const get = async ymd => {
-    const [y, m, d] = ymd.split("-");
-    const res = await fetch(`https://api.aladhan.com/v1/timings/${d}-${m}-${y}` +
-      `?latitude=${LOCATION.lat}&longitude=${LOCATION.lng}&method=${CALC_METHOD}&school=0&tune=${CALC_TUNE}`);
-    const t = (await res.json()).data.timings;
-    return {
-      ymd,
-      adhan: { fajr: toMinutes(t.Fajr), sunrise: toMinutes(t.Sunrise), zuhr: toMinutes(t.Dhuhr),
-               asr: toMinutes(t.Asr), maghrib: toMinutes(t.Maghrib), isha: toMinutes(t.Isha) },
-      iqamah: {},
-    };
-  };
-  const days = await Promise.all([get(today), get(addDays(today, 1))]);
-  return { days, hijri: null, calculated: true,
-           source: "Live times are unavailable, so these adhan times are calculated (Karachi method, standard Asr). Iqamah times are not shown." };
+  return { days, hijri, source: "Prayer times from Masjidal · updated by the masjid" };
 }
 
 // Jumu'ah times for the coming Friday (today, if it is Friday)
@@ -136,12 +113,7 @@ function render() {
     </tr>`).join("");
   document.querySelector(".times").classList.toggle("no-iqamah", !hasIqamah);
 
-  // Hero card: iqamah times when we have them (that's what people come for), else adhan
-  $("mini-times").innerHTML = SALAH.map(p => `
-    <li data-key="${p.key}"><span>${p.name}</span><span>${formatMinutes(hasIqamah ? today.iqamah[p.key] : today.adhan[p.key])}</span></li>`
-  ).join("") + `<li class="hint">${hasIqamah ? "Iqamah times" : "Adhan times"}</li>`;
-
-  if (!schedule.calculated && schedule.days.length > 2) {
+  if (schedule.days.length > 2) {
     $("week-body").innerHTML = schedule.days.map((d, i) => {
       const dow = new Date(d.ymd + "T12:00:00Z").getUTCDay();
       return `<tr class="${i === 0 ? "is-today" : ""} ${dow === 5 ? "is-friday" : ""}">
@@ -180,7 +152,7 @@ function tick() {
     minutesUntil = 24 * 60 - nowMin + fajr;
   }
 
-  document.querySelectorAll("#times-body tr, #mini-times li").forEach(el =>
+  document.querySelectorAll("#times-body tr").forEach(el =>
     el.classList.toggle("is-next", isToday && el.dataset.key === next.key));
 
   const total = Math.max(0, Math.round(minutesUntil * 60));
@@ -210,12 +182,9 @@ async function load() {
     schedule = await fromMasjidal(ymd);
   } catch (err) {
     console.warn(err);
-    try { schedule = await fromCalculation(ymd); }
-    catch {
-      $("times-body").innerHTML =
-        `<tr><td colspan="3" class="loading">Prayer times are unavailable right now. Please call (832) 743-8303.</td></tr>`;
-      return;
-    }
+    $("times-body").innerHTML =
+      `<tr><td colspan="3" class="loading">Prayer times are unavailable right now. Please call (832) 743-8303.</td></tr>`;
+    return;
   }
   render();
 }

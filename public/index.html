@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Spring Islamic Center · Klein Islamic Center</title>
-  <meta name="description" content="Spring Islamic Center (Klein Islamic Center) — daily salah and iqamah times, Jumu'ah, directions and contact. 18901 Kuykendahl Rd, Spring, TX 77388.">
+  <title>Spring Islamic Center · Spring, Texas</title>
+  <meta name="description" content="Spring Islamic Center — daily salah and iqamah times, Jumu'ah, directions and contact. 18901 Kuykendahl Rd, Spring, TX 77388.">
   <meta name="theme-color" content="#0e3b33">
   <link rel="icon" href="logo.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,7 @@
     <span>18901 Kuykendahl Rd, Spring, TX 77388</span>
     <span class="topbar-links">
       <a href="tel:+18327438303">(832) 743-8303</a>
-      <a href="mailto:kleinislamiccenter@gmail.com">kleinislamiccenter@gmail.com</a>
+      <a href="mailto:admin@masjidibrahimspring.org">admin@masjidibrahimspring.org</a>
     </span>
   </div>
 </div>
@@ -30,7 +30,7 @@
       <img src="logo.svg" alt="" width="40" height="40">
       <span class="brand-text">
         <strong>Spring Islamic Center</strong>
-        <small>Klein Islamic Center</small>
+        <small>Spring, Texas</small>
       </span>
     </a>
     <button class="menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
@@ -41,7 +41,6 @@
       <a href="#about">About</a>
       <a href="#visit">Visit</a>
       <a href="#contact">Contact</a>
-      <a class="btn btn-gold btn-sm" href="https://payments.madinaapps.com/masjidibrahimtx" target="_blank" rel="noopener">Donate</a>
     </nav>
   </div>
 </header>
@@ -53,77 +52,65 @@
       <div class="hero-copy">
         <p class="eyebrow">Spring, Texas</p>
         <h1>A place of prayer, learning&nbsp;and community</h1>
-        <p class="lead">Spring Islamic Center, run by the Klein Islamic Center, is open for the five daily prayers.
+        <p class="lead">Spring Islamic Center is open for the five daily prayers.
           Everyone is welcome.</p>
         <div class="hero-actions">
-          <a class="btn btn-gold" href="#prayer">Prayer times</a>
+          <a class="btn btn-gold" href="#week-section">This week &amp; Jumu'ah</a>
           <a class="btn btn-ghost" href="https://www.google.com/maps/dir/?api=1&destination=18901+Kuykendahl+Rd,+Spring,+TX+77388" target="_blank" rel="noopener">Get directions</a>
         </div>
       </div>
 
-      <aside class="today-card" aria-labelledby="today-title">
-        <div class="today-head">
-          <div>
-            <p class="today-label" id="today-title">Today</p>
-            <p class="today-date" id="greg-date">&nbsp;</p>
-            <p class="today-hijri" id="hijri-date">&nbsp;</p>
-          </div>
-        </div>
+      <aside class="today-card" id="prayer" aria-labelledby="today-title">
+        <p class="today-label" id="today-title">Today's prayer times</p>
+        <p class="today-date" id="greg-date">&nbsp;</p>
+        <p class="today-hijri" id="hijri-date">&nbsp;</p>
         <div class="next" aria-live="polite">
           <p class="next-label">Next prayer</p>
           <p class="next-name" id="next-name">—</p>
           <p class="next-countdown" id="next-countdown">&nbsp;</p>
         </div>
-        <ul class="mini-times" id="mini-times"></ul>
+        <table class="times">
+          <thead>
+            <tr><th scope="col">Prayer</th><th scope="col">Adhan</th><th scope="col">Iqamah</th></tr>
+          </thead>
+          <tbody id="times-body">
+            <tr><td colspan="3" class="loading">Loading prayer times…</td></tr>
+          </tbody>
+        </table>
+        <p class="source" id="source"></p>
       </aside>
     </div>
   </section>
 
-  <!-- Prayer times -->
-  <section class="section" id="prayer">
+  <!-- Jumu'ah and the week ahead -->
+  <section class="section" id="week-section">
     <div class="wrap">
       <header class="section-head">
         <p class="eyebrow">Salah</p>
-        <h2>Prayer times</h2>
-        <p class="section-sub">Adhan and iqamah times for Spring Islamic Center, kept up to date by the masjid.</p>
+        <h2>This week</h2>
       </header>
 
       <div class="prayer-grid">
-        <div class="card times-card">
-          <table class="times">
-            <thead>
-              <tr><th scope="col">Prayer</th><th scope="col">Adhan</th><th scope="col">Iqamah</th></tr>
-            </thead>
-            <tbody id="times-body">
-              <tr><td colspan="3" class="loading">Loading prayer times…</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="side-col">
-          <div class="card jumuah-card">
-            <p class="eyebrow">Every Friday</p>
-            <h3>Jumu'ah</h3>
-            <div class="jumuah-slots" id="jumuah-slots"><span class="muted">Loading…</span></div>
-            <p class="jumuah-place">Held at <strong>Masjid Ibrahim</strong><br>5500 FM 2920, Spring, TX 77388</p>
-            <a class="link" href="https://www.google.com/maps/dir/?api=1&destination=5500+FM+2920+Rd+Spring+TX+77388" target="_blank" rel="noopener">Directions to Masjid Ibrahim →</a>
+        <div class="card week-card" id="week" hidden>
+          <h3>The week ahead <span class="muted">· adhan times</span></h3>
+          <div class="table-scroll">
+            <table class="week">
+              <thead>
+                <tr><th scope="col">Day</th><th scope="col">Fajr</th><th scope="col">Sunrise</th><th scope="col">Dhuhr</th><th scope="col">Asr</th><th scope="col">Maghrib</th><th scope="col">Isha</th></tr>
+              </thead>
+              <tbody id="week-body"></tbody>
+            </table>
           </div>
         </div>
-      </div>
 
-      <div class="card week-card" id="week" hidden>
-        <h3>The week ahead <span class="muted">· adhan times</span></h3>
-        <div class="table-scroll">
-          <table class="week">
-            <thead>
-              <tr><th scope="col">Day</th><th scope="col">Fajr</th><th scope="col">Sunrise</th><th scope="col">Dhuhr</th><th scope="col">Asr</th><th scope="col">Maghrib</th><th scope="col">Isha</th></tr>
-            </thead>
-            <tbody id="week-body"></tbody>
-          </table>
+        <div class="card jumuah-card">
+          <p class="eyebrow">Every Friday</p>
+          <h3>Jumu'ah</h3>
+          <div class="jumuah-slots" id="jumuah-slots"><span class="muted">Loading…</span></div>
+          <p class="jumuah-place">Held at <strong>Masjid Ibrahim</strong><br>5500 FM 2920, Spring, TX 77388</p>
+          <a class="link" href="https://www.google.com/maps/dir/?api=1&destination=5500+FM+2920+Rd+Spring+TX+77388" target="_blank" rel="noopener">Directions to Masjid Ibrahim →</a>
         </div>
       </div>
-
-      <p class="source" id="source"></p>
     </div>
   </section>
 
@@ -142,7 +129,7 @@
       <header class="section-head left">
         <p class="eyebrow">About us</p>
         <h2>More than a place to pray</h2>
-        <p class="section-sub">The Klein Islamic Center serves the Muslim community of North Houston. It is a community center for everyone,
+        <p class="section-sub">Spring Islamic Center serves the Muslim community of North Houston. It is a community center for everyone,
           committed to an Islamic way of life based on the Qur'an and the Sunnah of the Prophet Muhammad ﷺ.</p>
       </header>
       <div class="pillars">
@@ -165,16 +152,6 @@
     </div>
   </section>
 
-  <!-- Donate band -->
-  <section class="donate">
-    <div class="wrap donate-inner">
-      <div>
-        <h2>Support your masjid</h2>
-        <p>Donations keep the center running. On the donation page, choose <strong>KIC Musalla Expenses</strong>.</p>
-      </div>
-      <a class="btn btn-gold" href="https://payments.madinaapps.com/masjidibrahimtx" target="_blank" rel="noopener">Donate now</a>
-    </div>
-  </section>
 
   <!-- Visit -->
   <section class="section" id="visit">
@@ -215,10 +192,10 @@
           <span class="contact-label">Phone</span>
           <span class="contact-value">(832) 743-8303</span>
         </a>
-        <a class="card contact-card" href="mailto:kleinislamiccenter@gmail.com">
+        <a class="card contact-card" href="mailto:admin@masjidibrahimspring.org">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3zM3 7l9 6 9-6"/></svg>
           <span class="contact-label">Email</span>
-          <span class="contact-value">kleinislamiccenter@gmail.com</span>
+          <span class="contact-value">admin@masjidibrahimspring.org</span>
         </a>
         <a class="card contact-card" href="https://www.google.com/maps/dir/?api=1&destination=18901+Kuykendahl+Rd,+Spring,+TX+77388" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
@@ -236,7 +213,7 @@
       <img src="logo.svg" alt="" width="44" height="44">
       <div>
         <strong>Spring Islamic Center</strong>
-        <p>A Klein Islamic Center masjid</p>
+        <p>A house of prayer in Spring, Texas</p>
       </div>
     </div>
     <div>
@@ -245,14 +222,14 @@
     </div>
     <div>
       <h4>Contact</h4>
-      <p><a href="tel:+18327438303">(832) 743-8303</a><br><a href="mailto:kleinislamiccenter@gmail.com">kleinislamiccenter@gmail.com</a></p>
+      <p><a href="tel:+18327438303">(832) 743-8303</a><br><a href="mailto:admin@masjidibrahimspring.org">admin@masjidibrahimspring.org</a></p>
     </div>
     <div>
       <h4>Explore</h4>
-      <p><a href="#prayer">Prayer times</a><br><a href="#about">About</a><br><a href="https://payments.madinaapps.com/masjidibrahimtx" target="_blank" rel="noopener">Donate</a></p>
+      <p><a href="#prayer">Prayer times</a><br><a href="#week-section">This week</a><br><a href="#about">About</a></p>
     </div>
   </div>
-  <div class="wrap footer-base">© <span id="year"></span> Klein Islamic Center · Spring Islamic Center</div>
+  <div class="wrap footer-base">© <span id="year"></span> Spring Islamic Center</div>
 </footer>
 
 <!-- phone quick actions -->
@@ -268,10 +245,6 @@
   <a href="tel:+18327438303">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
     <span>Call</span>
-  </a>
-  <a href="https://payments.madinaapps.com/masjidibrahimtx" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-8-4.8-8-10.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8 2.5C20 15.2 12 20 12 20z"/></svg>
-    <span>Donate</span>
   </a>
 </nav>
 

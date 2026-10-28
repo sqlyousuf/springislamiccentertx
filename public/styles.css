@@ -137,28 +137,53 @@ p { margin: 0; }
 .today-date { font-size: 1.05rem; font-weight: 600; margin-top: 4px; }
 .today-hijri { font-size: .88rem; color: rgba(255, 255, 255, .62); }
 .next {
-  margin: 22px 0;
-  padding: 20px 0;
+  margin: 18px 0;
+  padding: 18px 0;
   border-top: 1px solid rgba(255, 255, 255, .12);
   border-bottom: 1px solid rgba(255, 255, 255, .12);
 }
 .next-label { font-size: .8rem; color: rgba(255, 255, 255, .62); }
 .next-name { font-family: var(--serif); font-size: 2.1rem; font-weight: 600; line-height: 1.1; margin-top: 4px; }
 .next-countdown { font-variant-numeric: tabular-nums; color: var(--gold); font-weight: 500; margin-top: 4px; }
-.mini-times { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-.mini-times li {
-  display: flex;
-  justify-content: space-between;
-  padding: 7px 10px;
-  border-radius: 8px;
-  font-size: .92rem;
-  font-variant-numeric: tabular-nums;
-  color: rgba(255, 255, 255, .82);
+
+/* Today's prayer table, on the dark card */
+.times { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.times th {
+  text-align: left;
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .5);
+  font-weight: 600;
+  padding: 0 12px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, .12);
 }
-.mini-times li span:last-child { font-weight: 600; color: var(--white); }
-.mini-times li.is-next { background: rgba(201, 169, 106, .16); }
-.mini-times li.is-next span:first-child { color: var(--gold); font-weight: 600; }
-.mini-times .hint { font-size: .72rem; color: rgba(255, 255, 255, .5); padding: 6px 10px 0; justify-content: flex-end; }
+.times td { padding: 11px 12px; border-bottom: 1px solid rgba(255, 255, 255, .08); color: rgba(255, 255, 255, .8); }
+.times tr:last-child td { border-bottom: 0; }
+.times .name { font-weight: 600; color: var(--white); }
+.times .ar { font-family: "Amiri", serif; color: rgba(255, 255, 255, .5); font-size: .95rem; margin-left: 10px; }
+.times .iqamah { font-weight: 600; color: var(--white); }
+.times tr.sunrise td { color: rgba(255, 255, 255, .5); font-size: .9rem; padding-top: 8px; padding-bottom: 8px; }
+.times tr.sunrise .name { font-weight: 500; color: rgba(255, 255, 255, .6); }
+.times tr.is-next td { background: rgba(201, 169, 106, .16); border-bottom-color: transparent; }
+.times tr.is-next td:first-child { border-radius: 8px 0 0 8px; }
+.times tr.is-next td:last-child { border-radius: 0 8px 8px 0; }
+.times tr.is-next .name, .times tr.is-next .iqamah { color: var(--gold); }
+.times tr.is-next .name::after {
+  content: "Next";
+  margin-left: 8px;
+  font-size: .62rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--emerald-900);
+  vertical-align: 2px;
+}
+.times.no-iqamah th:last-child, .times.no-iqamah td:last-child { display: none; }
+.times td.loading { text-align: center; color: rgba(255, 255, 255, .65); padding: 36px 12px; }
+.today-card .source { margin-top: 14px; text-align: left; font-size: .75rem; color: rgba(255, 255, 255, .45); }
 
 /* ---- Sections ------------------------------------------------------------ */
 .section { padding: 96px 0; }
@@ -177,44 +202,6 @@ p { margin: 0; }
 
 /* ---- Prayer times -------------------------------------------------------- */
 .prayer-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
-.times-card { overflow: hidden; }
-.times { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-.times th {
-  text-align: left;
-  font-size: .72rem;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  font-weight: 600;
-  padding: 18px 28px;
-  background: var(--sand);
-  border-bottom: 1px solid var(--line);
-}
-.times td { padding: 18px 28px; border-bottom: 1px solid var(--line); font-size: 1.05rem; }
-.times tr:last-child td { border-bottom: 0; }
-.times .name { font-weight: 600; }
-.times .ar { font-family: "Amiri", serif; color: var(--muted); font-size: 1.05rem; margin-left: 12px; }
-.times .iqamah { font-weight: 600; color: var(--emerald-700); }
-.times tr.sunrise td { color: var(--muted); font-size: .95rem; padding-top: 12px; padding-bottom: 12px; background: #fcfbf8; }
-.times tr.sunrise .name { font-weight: 500; }
-.times tr.is-next td { background: #f1f6f3; }
-.times tr.is-next td:first-child { box-shadow: inset 4px 0 0 var(--gold); }
-.times tr.is-next .name::after {
-  content: "Next";
-  margin-left: 10px;
-  font-size: .68rem;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--emerald-800);
-  color: var(--white);
-  vertical-align: 2px;
-}
-.times.no-iqamah th:last-child, .times.no-iqamah td:last-child { display: none; }
-.times td.loading { text-align: center; color: var(--muted); padding: 48px 20px; }
-
-.side-col { display: grid; gap: 24px; }
 .jumuah-card {
   padding: 28px;
   background: var(--emerald-800);
@@ -238,7 +225,7 @@ p { margin: 0; }
 .jumuah-place strong { color: var(--white); }
 .jumuah-card .link { color: var(--gold); }
 
-.week-card { margin-top: 24px; padding: 28px; }
+.week-card { padding: 28px; }
 .week-card h3 { font-size: 1.05rem; margin-bottom: 16px; }
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .week { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .92rem; min-width: 620px; }
@@ -284,13 +271,6 @@ p { margin: 0; }
 }
 .pillar h3 { font-size: 1.05rem; color: var(--emerald-800); }
 .pillar p { color: var(--muted); font-size: .95rem; margin-top: 4px; }
-
-/* ---- Donate -------------------------------------------------------------- */
-.donate { background: var(--emerald-900); color: var(--white); padding: 56px 0; }
-.donate-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
-.donate h2 { font-size: clamp(1.8rem, 3vw, 2.3rem); }
-.donate p { margin-top: 8px; color: rgba(255, 255, 255, .72); }
-.donate strong { color: var(--gold); font-weight: 600; }
 
 /* ---- Visit --------------------------------------------------------------- */
 .visit-grid { display: grid; grid-template-columns: 380px 1fr; gap: 24px; }
@@ -378,11 +358,10 @@ p { margin: 0; }
   .today-card { padding: 20px; max-width: none; border-radius: 16px; }
   .next { margin: 16px 0; padding: 16px 0; }
   .next-name { font-size: 1.8rem; }
-  .mini-times li { padding: 9px 10px; font-size: 1rem; }
 
-  .times th, .times td { padding: 15px 16px; }
-  .times td { font-size: 1rem; }
-  .times .ar { display: block; margin-left: 0; font-size: .95rem; line-height: 1.3; }
+  .times th { padding: 0 8px 10px; }
+  .times td { padding: 10px 8px; font-size: 1rem; }
+  .times .ar { display: block; margin-left: 0; font-size: .9rem; line-height: 1.3; }
   .times tr.is-next .name::after { margin-left: 6px; }
   .jumuah-card, .week-card, .visit-card { padding: 22px; }
 
@@ -396,8 +375,6 @@ p { margin: 0; }
 
   .map, .map iframe { min-height: 280px; }
   .verse { padding: 56px 0; }
-  .donate { padding: 44px 0; }
-  .donate .btn { width: 100%; }
   .visit-card .btn { align-self: stretch; }
   .contact-card { flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: 14px; padding: 18px; }
   .contact-card svg { margin-bottom: 0; }
@@ -410,7 +387,7 @@ p { margin: 0; }
     left: 0; right: 0; bottom: 0;
     z-index: 60;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     padding-bottom: env(safe-area-inset-bottom);
     background: var(--emerald-900);
     border-top: 1px solid rgba(255, 255, 255, .08);
@@ -429,7 +406,6 @@ p { margin: 0; }
   }
   .quickbar a:active { background: rgba(255, 255, 255, .06); }
   .quickbar svg { width: 22px; height: 22px; fill: none; stroke: var(--gold); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-  .donate-inner { flex-direction: column; align-items: flex-start; }
   .contact-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
 }
