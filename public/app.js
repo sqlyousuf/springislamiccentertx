@@ -1,13 +1,15 @@
 // ---- Settings -------------------------------------------------------------
-// Klein Islamic Center's Masjidal ID (shown in the Masjidal admin portal, or in
-// the "masjid_id=" part of any Masjidal widget / display link for the masjid).
-// While it is empty, the page shows calculated adhan times instead.
-const MASJIDAL_ID = "";
+// Masjidal IDs (the "masjid_id=" in the masjid's Masjidal / AthanPlus widget).
+// Klein Islamic Center's ID comes from the widget on kleinislamiccenter.org.
+// Jumu'ah is held at Masjid Ibrahim, so its times come from that masjid's feed.
+const MASJIDAL_ID = "zKz3YnLO";        // Klein Islamic Center (this masjid)
+const JUMUAH_MASJIDAL_ID = "adJqxqAk"; // Masjid Ibrahim, 5500 FM 2920
+const WEEK_DAYS = 7;
 
 const TIMEZONE = "America/Chicago";
 const LOCATION = { lat: 30.0443, lng: -95.4908 }; // 18901 Kuykendahl Rd, Spring, TX
-// Matches Klein Islamic Center's settings on themasjidapp.org: Karachi method
-// (Fajr/Isha 18°), Shafi'i (standard) Asr, Dhuhr +1 minute.
+// Fallback only (if Masjidal is unreachable): matches Klein Islamic Center's
+// settings — Karachi method (Fajr/Isha 18°), Shafi'i (standard) Asr, Dhuhr +1 minute.
 const CALC_METHOD = 1;
 const CALC_TUNE = "0,0,0,1,0,0,0,0,0"; // imsak,fajr,sunrise,dhuhr,asr,maghrib,sunset,isha,midnight
 
@@ -19,6 +21,7 @@ const PRAYERS = [
   { key: "maghrib", name: "Maghrib", ar: "المغرب" },
   { key: "isha",    name: "Isha",    ar: "العشاء" },
 ];
+const SALAH = PRAYERS.filter(p => !p.noIqamah);
 
 // ---- Time helpers (everything in the masjid's timezone) --------------------
 function nowInZone() {
@@ -40,6 +43,10 @@ function addDays(ymd, n) {
   return d.toISOString().slice(0, 10);
 }
 
+function dayLabel(ymd, opts) {
+  return new Intl.DateTimeFormat("en-US", { timeZone: "UTC", ...opts }).format(new Date(ymd + "T12:00:00Z"));
+}
+
 // Accepts "5:45AM", "5:45 pm", "17:45", "05:45 (CDT)" -> minutes after midnight
 function toMinutes(str) {
   const m = String(str || "").match(/(\d{1,2}):(\d{2})\s*([ap]\.?m\.?)?/i);
@@ -57,21 +64,34 @@ function formatMinutes(min) {
   return `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
 }
 
+// Same as formatMinutes, with AM/PM in a span so small screens can hide it
+function formatCompact(min) {
+  if (min == null) return "—";
+  const [time, mer] = formatMinutes(min).split(" ");
+  return `${time}<span class="mer"> ${mer}</span>`;
+}
+
 // ---- Data sources ----------------------------------------------------------
-async function fromMasjidal(today) {
-  const url = `https://masjidal.com/api/v1/time/range?masjid_id=${encodeURIComponent(MASJIDAL_ID)}` +
-              `&from_date=${today}&to_date=${addDays(today, 1)}`;
-  const res = await fetch(url);
+async function masjidalRange(id, from, to) {
+  const res = await fetch(`https://masjidal.com/api/v1/time/range?masjid_id=${encodeURIComponent(id)}` +
+                          `&from_date=${from}&to_date=${to}`);
   const json = await res.json();
-  if (json.status !== "success" || !json.data?.salah?.length) throw new Error("Masjidal: no data");
-  const { salah, iqamah = [] } = json.data;
-  const day = i => ({
-    adhan: Object.fromEntries(PRAYERS.map(p => [p.key, toMinutes(salah[i]?.[p.key])])),
+  if (json.status !== "success" || !json.data?.salah?.length) throw new Error(`Masjidal ${id}: no data`);
+  return json.data;
+}
+
+async function fromMasjidal(today) {
+  const { salah, iqamah = [] } = await masjidalRange(MASJIDAL_ID, today, addDays(today, WEEK_DAYS - 1));
+  const days = salah.map((s, i) => ({
+    ymd: addDays(today, i),
+    adhan: Object.fromEntries(PRAYERS.map(p => [p.key, toMinutes(s[p.key])])),
     iqamah: Object.fromEntries(PRAYERS.map(p => [p.key, toMinutes(iqamah[i]?.[p.key])])),
-  });
-  const jumuah = ["jummah1", "jummah2", "jummah3"]
-    .map(k => toMinutes(iqamah[0]?.[k])).filter(v => v != null);
-  return { today: day(0), tomorrow: salah[1] ? day(1) : null, jumuah, source: "Times from Masjidal · Klein Islamic Center" };
+  }));
+  const s0 = salah[0];
+  const hijri = s0.hijri_date && s0.hijri_month
+    ? `${s0.hijri_date.split(",")[0].trim()} ${s0.hijri_month} ${s0.hijri_date.split(",")[1]?.trim() || ""} AH`.trim()
+    : null;
+  return { days, hijri, source: "Prayer times from Masjidal · updated by Klein Islamic Center" };
 }
 
 async function fromCalculation(today) {
@@ -81,94 +101,134 @@ async function fromCalculation(today) {
       `?latitude=${LOCATION.lat}&longitude=${LOCATION.lng}&method=${CALC_METHOD}&school=0&tune=${CALC_TUNE}`);
     const t = (await res.json()).data.timings;
     return {
+      ymd,
       adhan: { fajr: toMinutes(t.Fajr), sunrise: toMinutes(t.Sunrise), zuhr: toMinutes(t.Dhuhr),
                asr: toMinutes(t.Asr), maghrib: toMinutes(t.Maghrib), isha: toMinutes(t.Isha) },
       iqamah: {},
     };
   };
-  const [t, tm] = await Promise.all([get(today), get(addDays(today, 1))]);
-  return { today: t, tomorrow: tm, jumuah: [], source: "Adhan times · Karachi method (18°), standard Asr" };
+  const days = await Promise.all([get(today), get(addDays(today, 1))]);
+  return { days, hijri: null, calculated: true,
+           source: "Live times are unavailable, so these adhan times are calculated (Karachi method, standard Asr). Iqamah times are not shown." };
+}
+
+// Jumu'ah times for the coming Friday (today, if it is Friday)
+async function jumuahTimes(today) {
+  const dow = new Date(today + "T12:00:00Z").getUTCDay();
+  const friday = addDays(today, (5 - dow + 7) % 7);
+  const { iqamah = [] } = await masjidalRange(JUMUAH_MASJIDAL_ID, friday, friday);
+  return ["jummah1", "jummah2", "jummah3"].map(k => toMinutes(iqamah[0]?.[k])).filter(v => v != null);
 }
 
 // ---- Rendering -------------------------------------------------------------
 let schedule = null;
+const $ = id => document.getElementById(id);
 
 function render() {
-  const body = document.getElementById("times-body");
-  body.innerHTML = PRAYERS.map(p => `
+  const today = schedule.days[0];
+  const hasIqamah = SALAH.some(p => today.iqamah[p.key] != null);
+
+  $("times-body").innerHTML = PRAYERS.map(p => `
     <tr data-key="${p.key}" class="${p.noIqamah ? "sunrise" : ""}">
       <td><span class="name">${p.name}</span><span class="ar" lang="ar">${p.ar}</span></td>
-      <td>${formatMinutes(schedule.today.adhan[p.key])}</td>
-      <td class="iqamah">${p.noIqamah ? "" : formatMinutes(schedule.today.iqamah[p.key])}</td>
+      <td>${formatMinutes(today.adhan[p.key])}</td>
+      <td class="iqamah">${p.noIqamah ? "" : formatMinutes(today.iqamah[p.key])}</td>
     </tr>`).join("");
-
-  const hasIqamah = Object.values(schedule.today.iqamah).some(v => v != null);
   document.querySelector(".times").classList.toggle("no-iqamah", !hasIqamah);
 
-  if (schedule.jumuah.length) {
-    document.getElementById("jumuah-slots").innerHTML = schedule.jumuah
-      .map((t, i) => `<span>${schedule.jumuah.length > 1 ? `${["1st", "2nd", "3rd"][i]} · ` : ""}${formatMinutes(t)}</span>`)
-      .join("");
-    document.getElementById("jumuah").hidden = false;
+  // Hero card: iqamah times when we have them (that's what people come for), else adhan
+  $("mini-times").innerHTML = SALAH.map(p => `
+    <li data-key="${p.key}"><span>${p.name}</span><span>${formatMinutes(hasIqamah ? today.iqamah[p.key] : today.adhan[p.key])}</span></li>`
+  ).join("") + `<li class="hint">${hasIqamah ? "Iqamah times" : "Adhan times"}</li>`;
+
+  if (!schedule.calculated && schedule.days.length > 2) {
+    $("week-body").innerHTML = schedule.days.map((d, i) => {
+      const dow = new Date(d.ymd + "T12:00:00Z").getUTCDay();
+      return `<tr class="${i === 0 ? "is-today" : ""} ${dow === 5 ? "is-friday" : ""}">
+        <td>${i === 0 ? "Today" : dayLabel(d.ymd, { weekday: "short", day: "numeric" })}</td>
+        ${PRAYERS.map(p => `<td class="${p.noIqamah ? "col-sunrise" : ""}">${formatCompact(d.adhan[p.key])}</td>`).join("")}
+      </tr>`;
+    }).join("");
+    $("week").hidden = false;
+  } else {
+    $("week").hidden = true;
   }
-  document.getElementById("source").textContent = schedule.source;
+
+  if (schedule.hijri) $("hijri-date").textContent = schedule.hijri;
+  $("source").textContent = schedule.source;
   tick();
+}
+
+function renderJumuah(times) {
+  $("jumuah-slots").innerHTML = times.length
+    ? times.map((t, i) => `<div class="slot"><span>${times.length > 1 ? ["1st", "2nd", "3rd"][i] + " khutbah" : "Khutbah"}</span><strong>${formatMinutes(t)}</strong></div>`).join("")
+    : `<span class="muted">Please call (832) 743-8303 for this week's time.</span>`;
 }
 
 function tick() {
   if (!schedule) return;
-  const { seconds } = nowInZone();
-  const nowMin = seconds / 60;
-  let next = PRAYERS.filter(p => !p.noIqamah)
-    .map(p => ({ ...p, at: schedule.today.adhan[p.key] }))
-    .find(p => p.at != null && p.at > nowMin);
+  const nowMin = nowInZone().seconds / 60;
+  const today = schedule.days[0];
+  let next = SALAH.map(p => ({ ...p, at: today.adhan[p.key] })).find(p => p.at != null && p.at > nowMin);
   const isToday = !!next;
   let minutesUntil;
   if (isToday) {
     minutesUntil = next.at - nowMin;
   } else { // after Isha: tomorrow's Fajr
-    const fajr = (schedule.tomorrow || schedule.today).adhan.fajr;
+    const fajr = (schedule.days[1] || today).adhan.fajr;
     next = { ...PRAYERS[0], at: fajr };
     minutesUntil = 24 * 60 - nowMin + fajr;
   }
 
-  document.querySelectorAll("#times-body tr").forEach(tr =>
-    tr.classList.toggle("is-next", isToday && tr.dataset.key === next.key));
+  document.querySelectorAll("#times-body tr, #mini-times li").forEach(el =>
+    el.classList.toggle("is-next", isToday && el.dataset.key === next.key));
 
   const total = Math.max(0, Math.round(minutesUntil * 60));
   const h = Math.floor(total / 3600), m = Math.floor((total % 3600) / 60), s = total % 60;
-  document.getElementById("next-name").textContent = `${next.name} · ${formatMinutes(next.at)}`;
-  document.getElementById("next-countdown").textContent =
-    `in ${h ? h + "h " : ""}${m}m ${String(s).padStart(2, "0")}s`;
+  const iq = isToday ? today.iqamah[next.key] : null;
+  $("next-name").textContent = `${next.name} · ${formatMinutes(next.at)}`;
+  $("next-countdown").textContent =
+    `Adhan in ${h ? h + "h " : ""}${m}m ${String(s).padStart(2, "0")}s` + (iq != null ? ` · Iqamah ${formatMinutes(iq)}` : "");
 }
 
 function renderDates() {
   const now = new Date();
-  document.getElementById("greg-date").textContent = new Intl.DateTimeFormat("en-US",
+  $("greg-date").textContent = new Intl.DateTimeFormat("en-US",
     { timeZone: TIMEZONE, weekday: "long", month: "long", day: "numeric", year: "numeric" }).format(now);
   try {
-    document.getElementById("hijri-date").textContent = new Intl.DateTimeFormat("en-US-u-ca-islamic-umalqura",
+    $("hijri-date").textContent = new Intl.DateTimeFormat("en-US-u-ca-islamic-umalqura",
       { timeZone: TIMEZONE, day: "numeric", month: "long", year: "numeric" }).format(now);
   } catch { /* older browsers without the Islamic calendar */ }
-  document.getElementById("year").textContent = now.getFullYear();
+  $("year").textContent = now.getFullYear();
 }
 
 async function load() {
   renderDates();
   const { ymd } = nowInZone();
+  jumuahTimes(ymd).then(renderJumuah, err => { console.warn(err); renderJumuah([]); });
   try {
-    schedule = MASJIDAL_ID ? await fromMasjidal(ymd) : await fromCalculation(ymd);
+    schedule = await fromMasjidal(ymd);
   } catch (err) {
     console.warn(err);
     try { schedule = await fromCalculation(ymd); }
     catch {
-      document.getElementById("times-body").innerHTML =
+      $("times-body").innerHTML =
         `<tr><td colspan="3" class="loading">Prayer times are unavailable right now. Please call (832) 743-8303.</td></tr>`;
       return;
     }
   }
   render();
 }
+
+// ---- Mobile menu -------------------------------------------------------------
+const menuBtn = $("menu-btn"), menu = $("menu");
+function setMenu(open) {
+  menu.classList.toggle("open", open);
+  menuBtn.setAttribute("aria-expanded", String(open));
+  menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+}
+menuBtn.addEventListener("click", () => setMenu(!menu.classList.contains("open")));
+menu.addEventListener("click", e => { if (e.target.closest("a")) setMenu(false); });
 
 load();
 setInterval(tick, 1000);
