@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Spring Islamic Center logo">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3dc9b"/>
+      <stop offset=".5" stop-color="#d4af5a"/>
+      <stop offset="1" stop-color="#a9812f"/>
+    </linearGradient>
+  </defs>
+  <!-- navy medallion -->
+  <circle cx="100" cy="100" r="96" fill="#0b1f3a"/>
+  <circle cx="100" cy="100" r="90" fill="none" stroke="url(#gold)" stroke-width="3"/>
+  <circle cx="100" cy="100" r="84" fill="none" stroke="url(#gold)" stroke-width="1" opacity=".6"/>
+  <!-- eight-point star (Rub el Hizb) -->
+  <g fill="none" stroke="url(#gold)" stroke-width="3" stroke-linejoin="round">
+    <rect x="47" y="47" width="106" height="106"/>
+    <rect x="47" y="47" width="106" height="106" transform="rotate(45 100 100)"/>
+  </g>
+  <!-- crescent on the finial -->
+  <circle cx="100" cy="55" r="6" fill="url(#gold)"/>
+  <circle cx="102.6" cy="53.4" r="5" fill="#0b1f3a"/>
+  <!-- masjid: dome, base, minarets -->
+  <g fill="url(#gold)">
+    <path d="M100 66c-3 6-18 11-23 26-2 6-2 10-2 12h50c0-2 0-6-2-12-5-15-20-20-23-26z"/>
+    <rect x="98.8" y="60" width="2.4" height="8"/>
+    <rect x="72" y="106" width="56" height="36" rx="1"/>
+    <rect x="60" y="82" width="7" height="60"/>
+    <path d="M58.5 82l5-10 5 10z"/>
+    <rect x="133" y="82" width="7" height="60"/>
+    <path d="M131.5 82l5-10 5 10z"/>
+    <rect x="54" y="142" width="92" height="4" rx="1"/>
+  </g>
+  <!-- door arch -->
+  <path d="M92 142v-14a8 8 0 0 1 16 0v14z" fill="#0b1f3a"/>
+  <path d="M78 118a4 4 0 0 1 8 0v8h-8zM114 118a4 4 0 0 1 8 0v8h-8z" fill="#0b1f3a"/>
+</svg>
