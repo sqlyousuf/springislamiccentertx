@@ -5,8 +5,11 @@
 const MASJIDAL_ID = "";
 
 const TIMEZONE = "America/Chicago";
-const LOCATION = { lat: 30.0426, lng: -95.5181 }; // 18901 Kuykendahl Rd, Spring, TX
-const CALC_METHOD = 2; // ISNA, used only for the fallback
+const LOCATION = { lat: 30.0443, lng: -95.4908 }; // 18901 Kuykendahl Rd, Spring, TX
+// Matches Klein Islamic Center's settings on themasjidapp.org: Karachi method
+// (Fajr/Isha 18°), Shafi'i (standard) Asr, Dhuhr +1 minute.
+const CALC_METHOD = 1;
+const CALC_TUNE = "0,0,0,1,0,0,0,0,0"; // imsak,fajr,sunrise,dhuhr,asr,maghrib,sunset,isha,midnight
 
 const PRAYERS = [
   { key: "fajr",    name: "Fajr",    ar: "الفجر" },
@@ -75,7 +78,7 @@ async function fromCalculation(today) {
   const get = async ymd => {
     const [y, m, d] = ymd.split("-");
     const res = await fetch(`https://api.aladhan.com/v1/timings/${d}-${m}-${y}` +
-      `?latitude=${LOCATION.lat}&longitude=${LOCATION.lng}&method=${CALC_METHOD}`);
+      `?latitude=${LOCATION.lat}&longitude=${LOCATION.lng}&method=${CALC_METHOD}&school=0&tune=${CALC_TUNE}`);
     const t = (await res.json()).data.timings;
     return {
       adhan: { fajr: toMinutes(t.Fajr), sunrise: toMinutes(t.Sunrise), zuhr: toMinutes(t.Dhuhr),
@@ -84,7 +87,7 @@ async function fromCalculation(today) {
     };
   };
   const [t, tm] = await Promise.all([get(today), get(addDays(today, 1))]);
-  return { today: t, tomorrow: tm, jumuah: [], source: "Calculated adhan times (ISNA). Iqamah times coming soon." };
+  return { today: t, tomorrow: tm, jumuah: [], source: "Adhan times · Karachi method (18°), standard Asr" };
 }
 
 // ---- Rendering -------------------------------------------------------------
