@@ -1,3 +1,6 @@
 name = "springislamiccentertx"
-pages_build_output_dir = "public"
 compatibility_date = "2026-10-01"
+
+# Static site served by Workers static assets (deployed with `npx wrangler deploy`)
+[assets]
+directory = "./public"

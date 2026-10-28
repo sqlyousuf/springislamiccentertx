@@ -1,6 +1,6 @@
 # Spring Islamic Center website
 
-A static site (no build step) for Spring Islamic Center, 18901 Kuykendahl Rd, Spring, TX 77388. It's hosted on Cloudflare Pages.
+A static site (no build step) for Spring Islamic Center, 18901 Kuykendahl Rd, Spring, TX 77388. It's hosted on Cloudflare Workers (static assets).
 
 - `public/` holds everything that gets deployed: `index.html`, `styles.css`, `app.js` and `logo.svg`.
 - Prayer times come from **Masjidal** (Klein Islamic Center). If Masjidal can't be reached, or no ID is set, the site shows calculated adhan times from AlAdhan (ISNA method) instead.
@@ -12,18 +12,15 @@ Open [public/app.js](public/app.js) and set `MASJIDAL_ID` at the top. You can fi
 ## Preview locally
 
 ```sh
-npx wrangler pages dev public
+npx wrangler dev
 ```
 
-## Deploy to Cloudflare Pages
+## Deploy to Cloudflare
 
-**Option A: connect the Git repo (recommended)**
-1. Push this repo to GitHub.
-2. In Cloudflare, go to **Workers & Pages → Create → Pages → Connect to Git**.
-3. Set the framework preset to **None**, leave the build command empty, and set the build output directory to `public`.
+The Cloudflare Worker is connected to this GitHub repo, so every push to `main` deploys automatically. Its deploy command is `npx wrangler deploy`, and it reads [wrangler.toml](wrangler.toml), which serves the `public/` folder.
 
-**Option B: deploy from your machine**
+To deploy from your own machine instead:
 
 ```sh
-npx wrangler pages deploy public --project-name springislamiccentertx
+npx wrangler deploy
 ```
