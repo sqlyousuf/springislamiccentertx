@@ -134,7 +134,7 @@ function render() {
 function renderJumuah(times) {
   $("jumuah-slots").innerHTML = times.length
     ? times.map((t, i) => `<div class="slot"><span>${times.length > 1 ? ["1st", "2nd", "3rd"][i] + " khutbah" : "Khutbah"}</span><strong>${formatMinutes(t)}</strong></div>`).join("")
-    : `<span class="muted">Please call (832) 743-8303 for this week's time.</span>`;
+    : `<span class="muted">Please call (832) 534-3890 for this week's time.</span>`;
 }
 
 function tick() {
@@ -183,7 +183,7 @@ async function load() {
   } catch (err) {
     console.warn(err);
     $("times-body").innerHTML =
-      `<tr><td colspan="3" class="loading">Prayer times are unavailable right now. Please call (832) 743-8303.</td></tr>`;
+      `<tr><td colspan="3" class="loading">Prayer times are unavailable right now. Please call (832) 534-3890.</td></tr>`;
     return;
   }
   render();
