@@ -238,6 +238,61 @@ p { margin: 0; }
 
 .source { margin-top: 18px; text-align: center; font-size: .82rem; color: var(--muted); }
 
+/* ---- Programs & events --------------------------------------------------- */
+.section-divided { border-top: 1px solid var(--line); }
+.events { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.event { margin: 0; display: flex; flex-direction: column; }
+.event-flier {
+  display: block;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--emerald-800);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+.event-flier:hover { transform: translateY(-3px); border-color: var(--gold); box-shadow: 0 2px 4px rgba(10, 44, 38, .08), 0 16px 36px rgba(10, 44, 38, .14); }
+.event-flier img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.event figcaption { padding: 18px 4px 0; }
+.event-tag {
+  display: inline-block;
+  font-size: .66rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--emerald-800);
+  color: var(--gold);
+}
+.event h3 { font-family: var(--serif); font-size: 1.35rem; color: var(--emerald-800); margin-top: 10px; }
+.event p { margin-top: 6px; font-size: .88rem; color: var(--muted); }
+
+.lightbox {
+  padding: 0;
+  border: 0;
+  background: none;
+  max-width: min(92vw, 720px);
+  max-height: 92vh;
+  overflow: visible;
+}
+.lightbox::backdrop { background: rgba(10, 44, 38, .88); }
+.lightbox img { max-width: 100%; max-height: 92vh; width: auto; border-radius: 10px; box-shadow: 0 20px 60px rgba(0, 0, 0, .4); }
+.lightbox-close {
+  position: absolute;
+  top: -14px; right: -14px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--gold);
+  color: var(--emerald-900);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+}
+
 /* ---- Verse --------------------------------------------------------------- */
 .verse { background: var(--sand); text-align: center; padding: 80px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .verse-ar { font-family: "Amiri", serif; font-size: clamp(1.6rem, 3.5vw, 2.4rem); color: var(--emerald-800); line-height: 1.9; }
@@ -321,6 +376,7 @@ p { margin: 0; }
   .hero-grid { grid-template-columns: 1fr; gap: 48px; padding-top: 72px; padding-bottom: 72px; }
   .today-card { max-width: 520px; }
   .prayer-grid, .about-grid, .visit-grid { grid-template-columns: 1fr; }
+  .events { grid-template-columns: repeat(2, 1fr); }
   .about-grid { gap: 40px; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
@@ -372,6 +428,22 @@ p { margin: 0; }
   .week .col-sunrise, .week th:nth-child(3) { display: none; }
   .week .mer { display: none; }
   .week tr.is-friday td:first-child::after { content: " ★"; }
+
+  /* Fliers become a swipeable row that peeks the next card */
+  .events {
+    display: flex;
+    gap: 14px;
+    margin: 0 -16px;
+    padding: 0 16px 6px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .events::-webkit-scrollbar { display: none; }
+  .event { flex: 0 0 72%; scroll-snap-align: start; }
+  .lightbox-close { top: 8px; right: 8px; }
 
   .map, .map iframe { min-height: 280px; }
   .verse { padding: 56px 0; }

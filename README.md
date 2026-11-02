@@ -3,6 +3,7 @@
 A static site (no build step) for Spring Islamic Center, 18901 Kuykendahl Rd, Spring, TX 77388. It's hosted on Cloudflare Workers (static assets).
 
 - `public/` holds everything that gets deployed: `index.html`, `styles.css`, `app.js` and `logo.svg`.
+- Event fliers live in `public/events/` and are listed in the "Programs & events" section of `index.html`. To add or remove one, add or delete its `<figure class="event">` block there.
 - Prayer times come live from **Masjidal**'s public, keyless feed (`https://masjidal.com/api/v1/time/range`), called straight from the browser. If Masjidal can't be reached, the site asks visitors to call the masjid.
 - The site is built mobile-first, with a bottom quick-action bar on phones (Prayer times, Directions, Call).
 

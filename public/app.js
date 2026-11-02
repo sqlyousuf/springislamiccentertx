@@ -199,6 +199,21 @@ function setMenu(open) {
 menuBtn.addEventListener("click", () => setMenu(!menu.classList.contains("open")));
 menu.addEventListener("click", e => { if (e.target.closest("a")) setMenu(false); });
 
+// ---- Event fliers open full size in a lightbox -------------------------------
+const lightbox = $("lightbox");
+if (lightbox && lightbox.showModal) {
+  const lightboxImg = lightbox.querySelector("img");
+  document.querySelectorAll("[data-flier]").forEach(a => a.addEventListener("click", e => {
+    e.preventDefault();
+    const img = a.querySelector("img");
+    lightboxImg.src = a.href;
+    lightboxImg.alt = img.alt;
+    lightbox.showModal();
+  }));
+  // Close on the button or a click on the backdrop
+  lightbox.addEventListener("click", e => { if (e.target !== lightboxImg) lightbox.close(); });
+}
+
 load();
 setInterval(tick, 1000);
 // Reload the schedule once the date changes in the masjid's timezone
